@@ -4,47 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1f2a26">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4efe3">
 <title>観察マップ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
-  --paper:#f2f3ee; --paper-2:#e7e9e2; --ink:#1f2a26; --ink-2:#55605b; --ink-3:#8a948f;
-  --line:#cfd4cd; --card:#ffffff;
-  --sound:#2c6ea8; --sound-soft:#dbe8f4;
-  --smell:#b8642a; --smell-soft:#f4e3d4;
-  --tool:#3f8a5a;  --tool-soft:#d9ede0;
-  --memo:#6b7370;  --memo-soft:#e3e6e2;
-  --star:#c79a1a;
-  --shadow:0 6px 24px rgba(31,42,38,.14);
+  /* 『ふだんづかいの人類学』の紙・茶のインク・青のアクセント */
+  --paper:#f4efe3; --paper-2:#ebe3d2; --ink:#5b3a29; --ink-2:#86695a; --ink-3:#b09c8b;
+  --line:#e0d4c0; --card:#fbf8f1;
+  --blue:#2f8cb3;
+  --sound:#2f8cb3; --sound-soft:#dcecf2;
+  --smell:#b0582e; --smell-soft:#f3e0d2;
+  --tool:#6b8a4e;  --tool-soft:#e4ebd8;
+  --memo:#8a7565;  --memo-soft:#ece4d8;
+  --star:#c9962a;
+  --shadow:0 6px 24px rgba(91,58,41,.14);
   color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --paper:#181d1b; --paper-2:#202623; --ink:#e9ece8; --ink-2:#aab2ad; --ink-3:#737c77;
-    --line:#333b37; --card:#242b28;
-    --sound:#6fa6dc; --sound-soft:#22364a;
-    --smell:#e08a4e; --smell-soft:#3f2a1c;
-    --tool:#6fc08a;  --tool-soft:#1f3a2a;
-    --memo:#9aa39f;  --memo-soft:#2c3330;
-    --star:#e0b647;
-    --shadow:0 6px 24px rgba(0,0,0,.45);
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#181d1b; --paper-2:#202623; --ink:#e9ece8; --ink-2:#aab2ad; --ink-3:#737c77;
-  --line:#333b37; --card:#242b28;
-  --sound:#6fa6dc; --sound-soft:#22364a;
-  --smell:#e08a4e; --smell-soft:#3f2a1c;
-  --tool:#6fc08a;  --tool-soft:#1f3a2a;
-  --memo:#9aa39f;  --memo-soft:#2c3330;
-  --star:#e0b647;
-  --shadow:0 6px 24px rgba(0,0,0,.45);
-  color-scheme:dark;
 }
 /* per-walk accent: body[data-mode] */
 body{--ac:var(--memo);--ac-soft:var(--memo-soft)}
@@ -73,7 +51,8 @@ header{
   padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 8px;
   background:var(--paper);border-bottom:1px solid var(--line);z-index:5;
 }
-header h1{font-size:16px;font-weight:700;margin:0;letter-spacing:.02em}
+header h1{font-family:"Zen Old Mincho",serif;font-size:18px;font-weight:700;margin:0;letter-spacing:.08em}
+header h1 .no{color:var(--blue)}
 header .walk{flex:1;min-width:0;font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header .walk b{color:var(--ink);font-weight:500}
 header .walk .k{display:inline-block;font-size:10px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;background:var(--ac-soft);color:var(--ac);margin-right:6px;vertical-align:1px}
@@ -85,25 +64,23 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .view.on{display:block}
 #map{width:100%;height:100%;background:var(--paper-2)}
 .leaflet-container{font-family:inherit}
-.leaflet-tile-pane{filter:grayscale(1) brightness(1.08) contrast(.85)}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.75) contrast(.9)}
-}
-:root[data-theme="dark"] .leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.75) contrast(.9)}
-.leaflet-control-attribution{font-size:9px;background:rgba(255,255,255,.6)}
+.leaflet-tile-pane{filter:grayscale(1) sepia(.45) brightness(1.04) contrast(.8)}
+.leaflet-control-attribution{font-size:9px;background:rgba(251,248,241,.75);color:var(--ink-2)}
+.leaflet-control-attribution a{color:var(--blue)}
 
 /* pins */
-.pin{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:grid;place-items:center}
+.pin{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid var(--card);box-shadow:0 2px 6px rgba(91,58,41,.35);display:grid;place-items:center}
 .pin.sound{background:var(--sound)} .pin.smell{background:var(--smell)} .pin.tool{background:var(--tool)} .pin.memo{background:var(--memo)}
-.pin i{transform:rotate(45deg);width:8px;height:8px;border-radius:50%;background:#fff;opacity:.9}
+.pin i{transform:rotate(45deg);width:8px;height:8px;border-radius:50%;background:var(--card);opacity:.9}
 .pin.s1 i{width:5px;height:5px} .pin.s3 i{width:11px;height:11px}
 .pin.memo i{width:0;height:0}
 .pin.memo{width:18px;height:18px;border-radius:3px;transform:rotate(45deg)}
-.pin.star{border-color:var(--star);box-shadow:0 0 0 3px rgba(199,154,26,.35),0 2px 6px rgba(0,0,0,.35)}
+.pin.star{border-color:var(--star);box-shadow:0 0 0 3px rgba(201,150,42,.35),0 2px 6px rgba(91,58,41,.35)}
 .pin.dim{opacity:.28}
-.me{width:14px;height:14px;border-radius:50%;background:#1f2a26;border:3px solid #fff;box-shadow:0 0 0 2px rgba(31,42,38,.35)}
+.me{width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid var(--card);box-shadow:0 0 0 2px rgba(47,140,179,.35)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
 .leaflet-popup-content{margin:10px 12px;font-size:13px;line-height:1.45;min-width:160px}
-.leaflet-popup-content .t{font-size:11px;color:#666;letter-spacing:.06em}
+.leaflet-popup-content .t{font-size:11px;color:var(--ink-2);letter-spacing:.06em}
 .leaflet-popup-content b{display:block;font-size:14px}
 .leaflet-popup-content .ono{font-style:italic}
 
@@ -122,7 +99,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .list{height:100%;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 80px)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink-2);background:var(--card)}
-.chip.on{color:var(--ink);border-color:var(--ink);font-weight:500}
+.chip.on{color:var(--blue);border-color:var(--blue);background:var(--sound-soft);font-weight:500}
 .timeline{border-left:2px solid var(--line);margin-left:52px;padding-left:16px}
 .row{position:relative;padding:10px 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
@@ -144,7 +121,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 
 /* walks */
 .walks{height:100%;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 80px);max-width:560px}
-.walks h2,.list h2{font-size:13px;color:var(--ink-3);letter-spacing:.1em;font-weight:500;margin:0 0 10px}
+.walks h2,.list h2{font-family:"Zen Old Mincho",serif;font-size:14px;color:var(--blue);letter-spacing:.12em;font-weight:700;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--blue);display:inline-block}
 .modes{display:grid;gap:8px;margin-bottom:10px}
 .mode{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
 .mode .sw{grid-row:1/3;width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
@@ -165,25 +142,25 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .walkcard .go.now{color:var(--paper);background:var(--ink);border-color:var(--ink)}
 .btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:8px;padding:9px 14px;font-weight:500;white-space:nowrap}
 .btn.ghost{background:transparent;color:var(--ink)}
-.btn.danger{border-color:#b33;color:#b33;background:transparent}
+.btn.danger{border-color:#a8442e;color:#a8442e;background:transparent}
 .tools{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:22px}
 .tools .btn{text-align:center}
 .help{font-size:13px;color:var(--ink-2);margin-top:20px;line-height:1.7}
-.help b{color:var(--ink)}
+.help b{color:var(--blue);font-family:"Zen Old Mincho",serif}
 
 nav{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--paper);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
 nav button{flex:1;padding:9px 0 8px;font-size:11px;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.04em}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--ink)}
+nav button.on{color:var(--blue)}
 
 /* sheet */
-.scrim{position:fixed;inset:0;background:rgba(20,26,23,.45);z-index:900;opacity:0;transition:opacity .2s}
+.scrim{position:fixed;inset:0;background:rgba(60,38,26,.35);z-index:900;opacity:0;transition:opacity .2s}
 .scrim.show{opacity:1}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:901;background:var(--card);border-radius:18px 18px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 16px);box-shadow:0 -8px 30px rgba(0,0,0,.25);max-height:88%;overflow-y:auto;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:901;background:var(--card);border-radius:18px 18px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 16px);box-shadow:0 -8px 30px rgba(91,58,41,.2);max-height:88%;overflow-y:auto;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .sheet.show{transform:none}
 .grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
 .sheet .head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
-.sheet .head .kind{font-weight:700;font-size:17px;color:var(--ac)}
+.sheet .head .kind{font-family:"Zen Old Mincho",serif;font-weight:700;font-size:18px;color:var(--ac)}
 .sheet.memo .head .kind{color:var(--memo)}
 .sheet .head .when{font-size:12px;color:var(--ink-2)}
 .sheet .head .where{font-size:11px;color:var(--ink-3);margin-left:auto}
@@ -212,7 +189,7 @@ nav button.on{color:var(--ink)}
 <body>
 <div id="app">
   <header>
-    <h1>観察マップ</h1>
+    <h1>観察<span class="no">の</span>マップ</h1>
     <div class="walk" id="walkLabel">ウォーク未選択</div>
     <button class="iconbtn" id="btnLocate" title="現在地へ" aria-label="現在地へ">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
