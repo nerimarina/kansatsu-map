@@ -5,183 +5,180 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#f4efe3">
+<meta name="theme-color" content="#f6f1e6">
 <title>観察マップ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500&family=Zen+Old+Mincho:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
-  /* 『ふだんづかいの人類学』の紙・茶のインク・青のアクセント */
-  --paper:#f4efe3; --paper-2:#ebe3d2; --ink:#5b3a29; --ink-2:#86695a; --ink-3:#b09c8b;
-  --line:#e0d4c0; --card:#fbf8f1;
-  --blue:#2f8cb3;
-  --sound:#2f8cb3; --sound-soft:#dcecf2;
-  --smell:#b0582e; --smell-soft:#f3e0d2;
-  --tool:#6b8a4e;  --tool-soft:#e4ebd8;
-  --memo:#8a7565;  --memo-soft:#ece4d8;
-  --star:#c9962a;
-  --shadow:0 6px 24px rgba(91,58,41,.14);
+  /* 『ふだんづかいの人類学』：生成りの紙・茶のインク・青の差し色 */
+  --paper:#f6f1e6; --card:#fbf8f1;
+  --ink:#5a3825; --ink-2:#8a6b58; --ink-3:#b5a291;
+  --line:#dccfba; --rule:#c9b79d;
+  --blue:#3a8fb7; --blue-soft:#e3eef2;
+  --serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --latin:"Cormorant Garamond","Times New Roman",serif;
   color-scheme:light;
 }
-/* per-walk accent: body[data-mode] */
-body{--ac:var(--memo);--ac-soft:var(--memo-soft)}
-body[data-mode="sound"]{--ac:var(--sound);--ac-soft:var(--sound-soft)}
-body[data-mode="smell"]{--ac:var(--smell);--ac-soft:var(--smell-soft)}
-body[data-mode="tool"]{--ac:var(--tool);--ac-soft:var(--tool-soft)}
+body{--ac:var(--blue);--ac-soft:var(--blue-soft)}
 
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{
   font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
-  font-size:15px;line-height:1.55;color:var(--ink);background:var(--paper);
+  font-size:15px;line-height:1.6;color:var(--ink);background:var(--paper);
   overflow:hidden;-webkit-text-size-adjust:100%;
 }
-.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.mono{font-family:var(--latin);font-variant-numeric:tabular-nums lining-nums;letter-spacing:.04em}
+em.la{display:block;font-family:var(--latin);font-style:italic;font-weight:500;color:var(--blue);font-size:15px;letter-spacing:.04em;line-height:1.2;margin-bottom:2px}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-input,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%}
-textarea{resize:vertical;min-height:64px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:1.5px solid var(--blue);outline-offset:2px}
+input,textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:8px 2px;width:100%}
+input::placeholder,textarea::placeholder{color:var(--ink-3)}
+textarea{resize:vertical;min-height:64px;border:1px solid var(--line);padding:8px 10px;border-radius:2px}
 [hidden]{display:none!important}
 
 #app{height:100%;display:flex;flex-direction:column}
 
 header{
-  flex:0 0 auto;display:flex;align-items:center;gap:10px;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 8px;
+  flex:0 0 auto;display:flex;align-items:baseline;gap:12px;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px;
   background:var(--paper);border-bottom:1px solid var(--line);z-index:5;
 }
-header h1{font-family:"Zen Old Mincho",serif;font-size:18px;font-weight:700;margin:0;letter-spacing:.08em}
-header h1 .no{color:var(--blue)}
+header h1{font-family:var(--serif);font-size:18px;font-weight:700;margin:0;letter-spacing:.16em}
 header .walk{flex:1;min-width:0;font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header .walk b{color:var(--ink);font-weight:500}
-header .walk .k{display:inline-block;font-size:10px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;background:var(--ac-soft);color:var(--ac);margin-right:6px;vertical-align:1px}
-.iconbtn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);border:1px solid var(--line);background:var(--card);flex:0 0 auto}
-.iconbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+header .walk .k{font-family:var(--serif);color:var(--blue);margin-right:6px}
+header .walk .k::after{content:"／";color:var(--ink-3);margin-left:6px}
+.iconbtn{align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);border:1px solid var(--rule);flex:0 0 auto}
+.iconbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
 main{flex:1 1 auto;position:relative;min-height:0}
 .view{position:absolute;inset:0;display:none}
 .view.on{display:block}
-#map{width:100%;height:100%;background:var(--paper-2)}
+#map{width:100%;height:100%;background:var(--paper)}
 .leaflet-container{font-family:inherit}
-.leaflet-tile-pane{filter:grayscale(1) sepia(.45) brightness(1.04) contrast(.8)}
-.leaflet-control-attribution{font-size:9px;background:rgba(251,248,241,.75);color:var(--ink-2)}
-.leaflet-control-attribution a{color:var(--blue)}
+.leaflet-tile-pane{filter:grayscale(1) sepia(.22) contrast(.72) brightness(1.1);opacity:.72}
+.leaflet-control-attribution{font-size:9px;background:rgba(246,241,230,.8)!important;color:var(--ink-3)}
+.leaflet-control-attribution a{color:var(--ink-2)}
 
-/* pins */
-.pin{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid var(--card);box-shadow:0 2px 6px rgba(91,58,41,.35);display:grid;place-items:center}
-.pin.sound{background:var(--sound)} .pin.smell{background:var(--smell)} .pin.tool{background:var(--tool)} .pin.memo{background:var(--memo)}
-.pin i{transform:rotate(45deg);width:8px;height:8px;border-radius:50%;background:var(--card);opacity:.9}
-.pin.s1 i{width:5px;height:5px} .pin.s3 i{width:11px;height:11px}
-.pin.memo i{width:0;height:0}
-.pin.memo{width:18px;height:18px;border-radius:3px;transform:rotate(45deg)}
-.pin.star{border-color:var(--star);box-shadow:0 0 0 3px rgba(201,150,42,.35),0 2px 6px rgba(91,58,41,.35)}
-.pin.dim{opacity:.28}
-.me{width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid var(--card);box-shadow:0 0 0 2px rgba(47,140,179,.35)}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
-.leaflet-popup-content{margin:10px 12px;font-size:13px;line-height:1.45;min-width:160px}
-.leaflet-popup-content .t{font-size:11px;color:var(--ink-2);letter-spacing:.06em}
-.leaflet-popup-content b{display:block;font-size:14px}
+/* pins：本の地図の挿絵のような小さな○ */
+.pinwrap{width:24px;height:24px;display:grid;place-items:center}
+.pin{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--blue);background:var(--paper)}
+.pin.s1{width:10px;height:10px;border-width:2px} .pin.s3{width:20px;height:20px;border-width:3px}
+.pin.star{background:var(--blue);box-shadow:inset 0 0 0 2px var(--paper)}
+.pin.memo{width:9px;height:9px;border-radius:0;border:1.5px solid var(--ink);background:var(--paper);transform:rotate(45deg)}
+.pin.dim{opacity:.25}
+.me{width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--paper);box-shadow:0 0 0 5px rgba(90,56,37,.12)}
+.leaflet-popup-content-wrapper{background:var(--card);color:var(--ink);border-radius:2px;box-shadow:0 2px 12px rgba(90,56,37,.15)}
+.leaflet-popup-tip{background:var(--card)}
+.leaflet-popup-content{margin:10px 14px;font-size:13px;line-height:1.5;min-width:160px}
+.leaflet-popup-content .t{font-size:12px;color:var(--ink-2)}
+.leaflet-popup-content b{display:block;font-family:var(--serif);font-size:15px;margin:2px 0}
 .leaflet-popup-content .ono{font-style:italic}
+.leaflet-popup-content a{color:var(--blue)}
 
 /* map overlay */
-.fab-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;gap:10px;justify-content:center;align-items:stretch;pointer-events:none;z-index:400}
-.fab{pointer-events:auto;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--shadow);letter-spacing:.04em;font-weight:700}
-.fab.main{flex:1;max-width:260px;background:var(--ac);color:#fff;font-size:17px}
-.fab.memo{flex:0 0 auto;padding:0 18px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:14px;font-weight:500}
-.fab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.fab:active{transform:scale(.97)}
-.start-hint{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:400;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);font-size:14px;color:var(--ink-2);display:flex;gap:12px;align-items:center}
+.fab-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 18px calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;gap:10px;justify-content:center;align-items:stretch;pointer-events:none;z-index:400}
+.fab{pointer-events:auto;height:50px;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.12em;font-family:var(--serif);font-weight:700}
+.fab.main{flex:1;max-width:260px;background:var(--blue);color:var(--paper);font-size:16px;box-shadow:0 2px 10px rgba(58,143,183,.25)}
+.fab.memo{flex:0 0 auto;padding:0 18px;background:var(--paper);color:var(--ink);border:1px solid var(--ink);font-size:14px}
+.fab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.fab:active{transform:translateY(1px)}
+.start-hint{position:absolute;left:18px;right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:400;background:var(--paper);border:1px solid var(--rule);border-radius:2px;padding:14px 16px;font-size:13px;color:var(--ink-2);display:flex;gap:12px;align-items:center;justify-content:space-between}
 .start-hint .btn{flex:0 0 auto}
-.mode-tip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:400;background:var(--ink);color:var(--paper);font-size:12px;padding:6px 12px;border-radius:999px;box-shadow:var(--shadow);white-space:nowrap}
+.mode-tip{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:400;background:var(--paper);color:var(--ink);border:1px solid var(--rule);font-size:12px;padding:6px 14px;border-radius:2px;white-space:nowrap}
 
 /* list */
-.list{height:100%;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 80px)}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink-2);background:var(--card)}
-.chip.on{color:var(--blue);border-color:var(--blue);background:var(--sound-soft);font-weight:500}
-.timeline{border-left:2px solid var(--line);margin-left:52px;padding-left:16px}
-.row{position:relative;padding:10px 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;border-bottom:1px solid var(--line)}
+.list{height:100%;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 80px)}
+.filters{display:flex;gap:18px;flex-wrap:wrap;margin:4px 0 14px;border-bottom:1px solid var(--line)}
+.chip{padding:6px 0 7px;font-size:13px;color:var(--ink-3);border-bottom:1.5px solid transparent;margin-bottom:-1px}
+.chip.on{color:var(--blue);border-bottom-color:var(--blue)}
+.timeline{border-left:1px dotted var(--ink-2);margin-left:52px;padding-left:18px}
+.row{position:relative;padding:12px 0 14px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
-.row .time{position:absolute;left:-70px;top:12px;width:44px;text-align:right;font-size:12px;color:var(--ink-2)}
-.row .dot{position:absolute;left:-23px;top:16px;width:10px;height:10px;border-radius:50%;border:2px solid var(--paper);background:var(--ac)}
-.row.memo .dot{background:var(--memo);border-radius:2px}
-.row .label{font-weight:700;font-size:15px}
-.row.memo .label{font-weight:400}
-.row .label .k{font-size:11px;font-weight:500;letter-spacing:.06em;padding:1px 6px;border-radius:4px;margin-right:6px;vertical-align:1px;background:var(--memo-soft);color:var(--memo)}
+.row .time{position:absolute;left:-72px;top:13px;width:44px;text-align:right;font-size:14px;color:var(--ink-2)}
+.row .dot{position:absolute;left:-24px;top:18px;width:11px;height:11px;border-radius:50%;border:2px solid var(--blue);background:var(--paper)}
+.row.memo .dot{border:1.5px solid var(--ink);border-radius:0;width:8px;height:8px;left:-22.5px;top:20px;transform:rotate(45deg)}
+.row .label{font-family:var(--serif);font-weight:700;font-size:16px}
+.row.memo .label{font-weight:500}
+.row .label .k{font-family:var(--latin);font-style:italic;font-weight:500;color:var(--ink-2);margin-right:8px}
 .row .meta{grid-column:1/-1;font-size:13px;color:var(--ink-2)}
 .row .ono{font-style:italic}
-.row .strength{color:var(--ink-3);font-size:12px;letter-spacing:.1em}
-.row .strength b{color:var(--ink)}
-.row .star{grid-row:1;grid-column:2;font-size:20px;line-height:1;color:var(--line)}
-.row .star.on{color:var(--star)}
-.row .edit{grid-column:1/-1;font-size:12px;color:var(--ink-3);justify-self:start}
-.empty{color:var(--ink-2);font-size:14px;padding:30px 0;text-align:center}
-.daysep{font-size:12px;color:var(--ink-3);letter-spacing:.08em;margin:18px 0 6px -68px}
+.row .strength{color:var(--ink-3);font-size:12px;letter-spacing:.08em}
+.row .strength b{color:var(--blue);font-weight:400}
+.row .star{grid-row:1;grid-column:2;font-size:18px;line-height:1;color:var(--line)}
+.row .star.on{color:var(--blue)}
+.row .edit{grid-column:1/-1;font-size:12px;color:var(--ink-3);justify-self:start;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.empty{color:var(--ink-2);font-size:13px;padding:36px 0;text-align:center;font-family:var(--serif)}
+.daysep{position:relative;display:inline-block;background:var(--paper);padding:2px 8px 2px 0;font-size:15px;font-style:italic;color:var(--blue);margin:14px 0 2px -72px}
 
 /* walks */
-.walks{height:100%;overflow-y:auto;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 80px);max-width:560px}
-.walks h2,.list h2{font-family:"Zen Old Mincho",serif;font-size:14px;color:var(--blue);letter-spacing:.12em;font-weight:700;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--blue);display:inline-block}
-.modes{display:grid;gap:8px;margin-bottom:10px}
-.mode{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
-.mode .sw{grid-row:1/3;width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
-.mode .sw svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mode[data-m="sound"] .sw{background:var(--sound)} .mode[data-m="smell"] .sw{background:var(--smell)} .mode[data-m="tool"] .sw{background:var(--tool)}
-.mode .n{font-weight:700}
-.mode .d{font-size:12px;color:var(--ink-2)}
-.mode.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
-.newwalk{display:flex;gap:8px;margin-bottom:18px}
+.walks{height:100%;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 80px);max-width:560px}
+.walks h2,.list h2{font-family:var(--serif);font-size:17px;color:var(--ink);letter-spacing:.14em;font-weight:700;margin:0 0 12px}
+.modes{display:grid;margin-bottom:14px;border-top:1px solid var(--line)}
+.mode{display:grid;grid-template-columns:auto 1fr auto;gap:0 14px;align-items:center;text-align:left;padding:13px 4px;border-bottom:1px solid var(--line)}
+.mode .sw{grid-row:1/3;width:36px;height:36px;border-radius:50%;border:1px solid var(--rule);display:grid;place-items:center;color:var(--ink-2)}
+.mode .sw svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mode .n{font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.06em}
+.mode .d{grid-column:2;font-size:12px;color:var(--ink-2);line-height:1.5}
+.mode::after{content:"";grid-row:1/3;grid-column:3;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--rule)}
+.mode.on .sw{border-color:var(--blue);color:var(--blue)}
+.mode.on .n{color:var(--blue)}
+.mode.on::after{border-color:var(--blue);background:var(--blue);box-shadow:inset 0 0 0 2px var(--paper)}
+.newwalk{display:flex;gap:12px;align-items:flex-end;margin-bottom:34px}
 .newwalk input{flex:1}
-.walkcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center}
-.walkcard.current{border-color:var(--ink)}
-.walkcard .bar{grid-row:1/3;width:4px;height:34px;border-radius:2px}
-.walkcard .bar.sound{background:var(--sound)} .walkcard .bar.smell{background:var(--smell)} .walkcard .bar.tool{background:var(--tool)}
-.walkcard .name{font-weight:700}
-.walkcard .sub{grid-column:2;font-size:12px;color:var(--ink-2)}
-.walkcard .go{grid-row:1/3;grid-column:3;font-size:13px;color:var(--ink-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--paper)}
-.walkcard .go.now{color:var(--paper);background:var(--ink);border-color:var(--ink)}
-.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:8px;padding:9px 14px;font-weight:500;white-space:nowrap}
-.btn.ghost{background:transparent;color:var(--ink)}
-.btn.danger{border-color:#a8442e;color:#a8442e;background:transparent}
-.tools{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:22px}
-.tools .btn{text-align:center}
-.help{font-size:13px;color:var(--ink-2);margin-top:20px;line-height:1.7}
-.help b{color:var(--blue);font-family:"Zen Old Mincho",serif}
+.walkcard{padding:13px 4px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:0 12px;align-items:center}
+.walkcard:first-child{border-top:1px solid var(--line)}
+.walkcard .bar{display:none}
+.walkcard .name{font-family:var(--serif);font-weight:700;letter-spacing:.04em}
+.walkcard.current .name{color:var(--blue)}
+.walkcard .sub{grid-column:1;font-size:12px;color:var(--ink-2)}
+.walkcard .go{grid-row:1/3;grid-column:2;font-size:12px;color:var(--ink-2);border:1px solid var(--rule);border-radius:2px;padding:5px 12px;letter-spacing:.08em}
+.walkcard .go.now{color:var(--blue);border-color:var(--blue)}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:2px;padding:9px 16px;letter-spacing:.1em;white-space:nowrap;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.danger{border-color:var(--rule);color:#a24a2c;background:transparent}
+.tools{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:26px}
+.tools .btn{text-align:center;font-size:13px;letter-spacing:.04em}
+.help{font-size:13px;color:var(--ink-2);margin-top:30px;padding-top:18px;border-top:1px solid var(--line);line-height:1.9}
+.help b{display:block;color:var(--ink);font-family:var(--serif);font-size:15px;letter-spacing:.14em;margin-bottom:4px}
 
 nav{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--paper);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
-nav button{flex:1;padding:9px 0 8px;font-size:11px;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.04em}
-nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button{flex:1;padding:9px 0 8px;font-size:11px;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.14em}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--blue)}
 
 /* sheet */
-.scrim{position:fixed;inset:0;background:rgba(60,38,26,.35);z-index:900;opacity:0;transition:opacity .2s}
+.scrim{position:fixed;inset:0;background:rgba(90,56,37,.22);z-index:900;opacity:0;transition:opacity .2s}
 .scrim.show{opacity:1}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:901;background:var(--card);border-radius:18px 18px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 16px);box-shadow:0 -8px 30px rgba(91,58,41,.2);max-height:88%;overflow-y:auto;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:901;background:var(--paper);border-top:1px solid var(--rule);border-radius:4px 4px 0 0;padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 16px);box-shadow:0 -6px 24px rgba(90,56,37,.12);max-height:88%;overflow-y:auto;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .sheet.show{transform:none}
-.grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
-.sheet .head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
-.sheet .head .kind{font-family:"Zen Old Mincho",serif;font-weight:700;font-size:18px;color:var(--ac)}
-.sheet.memo .head .kind{color:var(--memo)}
-.sheet .head .when{font-size:12px;color:var(--ink-2)}
-.sheet .head .where{font-size:11px;color:var(--ink-3);margin-left:auto}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:5px;letter-spacing:.04em}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{flex:1;padding:9px 0;font-size:14px;color:var(--ink-2);background:var(--paper)}
-.seg button+button{border-left:1px solid var(--line)}
-.seg button.on{background:var(--ac);color:#fff;font-weight:500}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--ink-2);background:var(--paper)}
-.chips button.on{border-color:var(--ac);color:var(--ac);background:var(--ac-soft)}
-.more-toggle{font-size:13px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;margin:2px 0 12px;display:inline-block}
-.starrow{display:flex;align-items:center;gap:10px;padding:4px 0 8px}
-.starrow button{font-size:26px;line-height:1;color:var(--line)}
-.starrow button.on{color:var(--star)}
+.grip{width:32px;height:3px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sheet .head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sheet .head .kind{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.1em;color:var(--blue)}
+.sheet.memo .head .kind{color:var(--ink)}
+.sheet .head .when{font-size:15px;color:var(--ink-2)}
+.sheet .head .where{font-size:13px;color:var(--ink-3);margin-left:auto}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:2px;letter-spacing:.06em}
+.seg{display:flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden;margin-top:4px}
+.seg button{flex:1;padding:8px 0;font-size:13px;color:var(--ink-2)}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button.on{background:var(--blue);color:var(--paper)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chips button{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:12px;color:var(--ink-2)}
+.chips button.on{border-color:var(--blue);color:var(--blue)}
+.more-toggle{font-size:12px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule);margin:0 0 12px;display:inline-block}
+.starrow{display:flex;align-items:center;gap:10px;padding:4px 0 10px}
+.starrow button{font-size:22px;line-height:1;color:var(--line)}
+.starrow button.on{color:var(--blue)}
 .starrow span{font-size:13px;color:var(--ink-2)}
 .actions{display:flex;gap:8px;margin-top:6px}
-.actions .btn{flex:1;text-align:center;padding:12px}
-.actions .btn.save{background:var(--ac);border-color:var(--ac);color:#fff}
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:999px;font-size:13px;z-index:950;box-shadow:var(--shadow);opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.actions .btn{flex:1;text-align:center;padding:11px}
+.actions .btn.save{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:2px;font-size:12px;letter-spacing:.04em;z-index:950;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -189,7 +186,7 @@ nav button.on{color:var(--blue)}
 <body>
 <div id="app">
   <header>
-    <h1>観察<span class="no">の</span>マップ</h1>
+    <h1>観察マップ</h1>
     <div class="walk" id="walkLabel">ウォーク未選択</div>
     <button class="iconbtn" id="btnLocate" title="現在地へ" aria-label="現在地へ">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
@@ -212,7 +209,7 @@ nav button.on{color:var(--blue)}
 
     <section class="view" id="viewList">
       <div class="list">
-        <h2 id="listTitle">タイムライン</h2>
+        <h2><em class="la">Chronologie</em><span id="listTitle">タイムライン</span></h2>
         <div class="filters">
           <button class="chip on" data-f="all">すべて</button>
           <button class="chip" data-f="main" id="chipMain">記録</button>
@@ -225,7 +222,7 @@ nav button.on{color:var(--blue)}
 
     <section class="view" id="viewWalks">
       <div class="walks">
-        <h2>新しいウォーク</h2>
+        <h2><em class="la">Nouvelle promenade</em>新しいウォーク</h2>
         <div class="modes" id="modes">
           <button class="mode on" data-m="sound">
             <span class="sw"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg></span>
@@ -242,9 +239,9 @@ nav button.on{color:var(--blue)}
         </div>
         <form class="newwalk" id="newWalkForm">
           <input id="newWalkName" placeholder="場所やタイトル（空欄でもOK）" autocomplete="off">
-          <button class="btn" type="submit">開始</button>
+          <button class="btn" type="submit">はじめる</button>
         </form>
-        <h2>これまでのウォーク</h2>
+        <h2><em class="la">Promenades passées</em>これまでのウォーク</h2>
         <div id="walkList"></div>
         <div class="tools">
           <button class="btn ghost" id="btnExport">JSONを書き出す</button>
@@ -381,12 +378,13 @@ $('btnLocate').onclick = () => { if(myPos) map.setView(myPos, Math.max(map.getZo
 
 function pinIcon(e){
   const cls = ['pin', e.kind, 's'+(e.strength||2), e.star ? 'star' : '', (filter==='star' && !e.star) ? 'dim' : ''].join(' ');
-  const memo = e.kind === 'memo';
-  return L.divIcon({ className:'', html:`<div class="${cls}"><i></i></div>`, iconSize: memo?[18,18]:[26,26], iconAnchor: memo?[9,9]:[6,26], popupAnchor: memo?[0,-10]:[7,-24] });
+  return L.divIcon({ className:'', html:`<div class="pinwrap"><div class="${cls}"></div></div>`, iconSize:[24,24], iconAnchor:[12,12], popupAnchor:[0,-10] });
 }
 function renderPins(){
   layer.clearLayers();
-  walkEntries().forEach(e => {
+  const es = walkEntries();
+  if(es.length > 1) L.polyline(es.map(e => [e.lat, e.lng]), { color:'#8a6b58', weight:2, opacity:.8, dashArray:'1 7', lineCap:'round', interactive:false }).addTo(layer);
+  es.forEach(e => {
     const m = L.marker([e.lat, e.lng], { icon: pinIcon(e) }).addTo(layer);
     const head = e.kind === 'memo' ? 'メモ' : `${MODES[e.kind].short} · 強さ${e.strength}`;
     m.bindPopup(`<div class="t mono">${fmtTime(e.t)} · ${head}${e.star?' ★':''}</div><b>${esc(e.label||'（無題）')}</b>${e.ono?`<span class="ono">${esc(e.ono)}</span><br>`:''}${e.note?esc(e.note):''}<br><a href="#" data-edit="${e.id}">編集</a>`);
@@ -549,7 +547,7 @@ function renderWalks(){
     return `<div class="walkcard ${cur?'current':''}">
       <span class="bar ${w.mode}"></span>
       <div class="name">${esc(w.name)}</div>
-      <div class="sub mono">${MODES[w.mode].name} · ${new Date(w.started).toLocaleDateString('ja-JP')} · ${n.length}件${st?` · ★${st}`:''}</div>
+      <div class="sub">${MODES[w.mode].name} · ${new Date(w.started).toLocaleDateString('ja-JP')} · ${n.length}件${st?` · ★${st}`:''}</div>
       <button class="go ${cur?'now':''}" data-walk="${w.id}">${cur?'記録中':'開く'}</button>
     </div>`;
   }).join('');
