@@ -375,7 +375,9 @@ const $ = id => document.getElementById(id);
 
 // ---------- map ----------
 const map = L.map('map', { zoomControl:false }).setView(state.lastCenter || [35.735, 139.65], state.lastCenter ? 16 : 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap' }).addTo(map);
+const dark = () => document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+const tiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark() ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom:20, subdomains:'abcd', attribution:'&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => tiles.setUrl(`https://{s}.basemaps.cartocdn.com/${dark() ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`));
 const layer = L.layerGroup().addTo(map);
 let meMarker = null, myPos = null, watching = false;
 map.on('moveend', () => { const c = map.getCenter(); state.lastCenter = [c.lat, c.lng]; save(); });
