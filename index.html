@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#f6f1e6">
 <title>観察マップ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500&family=Zen+Old+Mincho:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
@@ -17,7 +17,7 @@
   --ink:#5a3825; --ink-2:#8a6b58; --ink-3:#b5a291;
   --line:#dccfba; --rule:#c9b79d;
   --blue:#3a8fb7; --blue-soft:#e3eef2;
-  --serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --head:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
   --latin:"Cormorant Garamond","Times New Roman",serif;
   color-scheme:light;
 }
@@ -46,10 +46,10 @@ header{
   padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px;
   background:var(--paper);border-bottom:1px solid var(--line);z-index:5;
 }
-header h1{font-family:var(--serif);font-size:18px;font-weight:700;margin:0;letter-spacing:.16em}
+header h1{font-family:var(--head);font-size:17px;font-weight:700;margin:0;letter-spacing:.12em}
 header .walk{flex:1;min-width:0;font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header .walk b{color:var(--ink);font-weight:500}
-header .walk .k{font-family:var(--serif);color:var(--blue);margin-right:6px}
+header .walk .k{font-family:var(--head);color:var(--blue);margin-right:6px}
 header .walk .k::after{content:"／";color:var(--ink-3);margin-left:6px}
 .iconbtn{align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);border:1px solid var(--rule);flex:0 0 auto}
 .iconbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -75,13 +75,13 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .leaflet-popup-tip{background:var(--card)}
 .leaflet-popup-content{margin:10px 14px;font-size:13px;line-height:1.5;min-width:160px}
 .leaflet-popup-content .t{font-size:12px;color:var(--ink-2)}
-.leaflet-popup-content b{display:block;font-family:var(--serif);font-size:15px;margin:2px 0}
+.leaflet-popup-content b{display:block;font-family:var(--head);font-size:15px;margin:2px 0}
 .leaflet-popup-content .ono{font-style:italic}
 .leaflet-popup-content a{color:var(--blue)}
 
 /* map overlay */
 .fab-wrap{position:absolute;left:0;right:0;bottom:0;padding:0 18px calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;gap:10px;justify-content:center;align-items:stretch;pointer-events:none;z-index:400}
-.fab{pointer-events:auto;height:50px;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.12em;font-family:var(--serif);font-weight:700}
+.fab{pointer-events:auto;height:50px;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.12em;font-family:var(--head);font-weight:700}
 .fab.main{flex:1;max-width:260px;background:var(--blue);color:var(--paper);font-size:16px;box-shadow:0 2px 10px rgba(58,143,183,.25)}
 .fab.memo{flex:0 0 auto;padding:0 18px;background:var(--paper);color:var(--ink);border:1px solid var(--ink);font-size:14px}
 .fab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -101,7 +101,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .row .time{position:absolute;left:-72px;top:13px;width:44px;text-align:right;font-size:14px;color:var(--ink-2)}
 .row .dot{position:absolute;left:-24px;top:18px;width:11px;height:11px;border-radius:50%;border:2px solid var(--blue);background:var(--paper)}
 .row.memo .dot{border:1.5px solid var(--ink);border-radius:0;width:8px;height:8px;left:-22.5px;top:20px;transform:rotate(45deg)}
-.row .label{font-family:var(--serif);font-weight:700;font-size:16px}
+.row .label{font-family:var(--head);font-weight:700;font-size:16px}
 .row.memo .label{font-weight:500}
 .row .label .k{font-family:var(--latin);font-style:italic;font-weight:500;color:var(--ink-2);margin-right:8px}
 .row .meta{grid-column:1/-1;font-size:13px;color:var(--ink-2)}
@@ -111,17 +111,17 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .row .star{grid-row:1;grid-column:2;font-size:18px;line-height:1;color:var(--line)}
 .row .star.on{color:var(--blue)}
 .row .edit{grid-column:1/-1;font-size:12px;color:var(--ink-3);justify-self:start;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
-.empty{color:var(--ink-2);font-size:13px;padding:36px 0;text-align:center;font-family:var(--serif)}
+.empty{color:var(--ink-2);font-size:13px;padding:36px 0;text-align:center;font-family:var(--head)}
 .daysep{position:relative;display:inline-block;background:var(--paper);padding:2px 8px 2px 0;font-size:15px;font-style:italic;color:var(--blue);margin:14px 0 2px -72px}
 
 /* walks */
 .walks{height:100%;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 80px);max-width:560px}
-.walks h2,.list h2{font-family:var(--serif);font-size:17px;color:var(--ink);letter-spacing:.14em;font-weight:700;margin:0 0 12px}
+.walks h2,.list h2{font-family:var(--head);font-size:16px;color:var(--ink);letter-spacing:.1em;font-weight:700;margin:0 0 12px}
 .modes{display:grid;margin-bottom:14px;border-top:1px solid var(--line)}
 .mode{display:grid;grid-template-columns:auto 1fr auto;gap:0 14px;align-items:center;text-align:left;padding:13px 4px;border-bottom:1px solid var(--line)}
 .mode .sw{grid-row:1/3;width:36px;height:36px;border-radius:50%;border:1px solid var(--rule);display:grid;place-items:center;color:var(--ink-2)}
 .mode .sw svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.mode .n{font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.06em}
+.mode .n{font-family:var(--head);font-weight:700;font-size:15px;letter-spacing:.06em}
 .mode .d{grid-column:2;font-size:12px;color:var(--ink-2);line-height:1.5}
 .mode::after{content:"";grid-row:1/3;grid-column:3;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--rule)}
 .mode.on .sw{border-color:var(--blue);color:var(--blue)}
@@ -132,7 +132,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .walkcard{padding:13px 4px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:0 12px;align-items:center}
 .walkcard:first-child{border-top:1px solid var(--line)}
 .walkcard .bar{display:none}
-.walkcard .name{font-family:var(--serif);font-weight:700;letter-spacing:.04em}
+.walkcard .name{font-family:var(--head);font-weight:700;letter-spacing:.04em}
 .walkcard.current .name{color:var(--blue)}
 .walkcard .sub{grid-column:1;font-size:12px;color:var(--ink-2)}
 .walkcard .go{grid-row:1/3;grid-column:2;font-size:12px;color:var(--ink-2);border:1px solid var(--rule);border-radius:2px;padding:5px 12px;letter-spacing:.08em}
@@ -143,7 +143,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .tools{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:26px}
 .tools .btn{text-align:center;font-size:13px;letter-spacing:.04em}
 .help{font-size:13px;color:var(--ink-2);margin-top:30px;padding-top:18px;border-top:1px solid var(--line);line-height:1.9}
-.help b{display:block;color:var(--ink);font-family:var(--serif);font-size:15px;letter-spacing:.14em;margin-bottom:4px}
+.help b{display:block;color:var(--ink);font-family:var(--head);font-size:15px;letter-spacing:.14em;margin-bottom:4px}
 
 nav{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--paper);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
 nav button{flex:1;padding:9px 0 8px;font-size:11px;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.14em}
@@ -157,7 +157,7 @@ nav button.on{color:var(--blue)}
 .sheet.show{transform:none}
 .grip{width:32px;height:3px;border-radius:2px;background:var(--line);margin:0 auto 14px}
 .sheet .head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.sheet .head .kind{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.1em;color:var(--blue)}
+.sheet .head .kind{font-family:var(--head);font-weight:700;font-size:18px;letter-spacing:.1em;color:var(--blue)}
 .sheet.memo .head .kind{color:var(--ink)}
 .sheet .head .when{font-size:15px;color:var(--ink-2)}
 .sheet .head .where{font-size:13px;color:var(--ink-3);margin-left:auto}
