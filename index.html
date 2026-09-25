@@ -85,6 +85,11 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .view.on{display:block}
 #map{width:100%;height:100%;background:var(--paper-2)}
 .leaflet-container{font-family:inherit}
+.leaflet-tile-pane{filter:grayscale(1) brightness(1.08) contrast(.85)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.75) contrast(.9)}
+}
+:root[data-theme="dark"] .leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.75) contrast(.9)}
 .leaflet-control-attribution{font-size:9px;background:rgba(255,255,255,.6)}
 
 /* pins */
@@ -375,9 +380,7 @@ const $ = id => document.getElementById(id);
 
 // ---------- map ----------
 const map = L.map('map', { zoomControl:false }).setView(state.lastCenter || [35.735, 139.65], state.lastCenter ? 16 : 13);
-const dark = () => document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
-const tiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark() ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom:20, subdomains:'abcd', attribution:'&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => tiles.setUrl(`https://{s}.basemaps.cartocdn.com/${dark() ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`));
+const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
 const layer = L.layerGroup().addTo(map);
 let meMarker = null, myPos = null, watching = false;
 map.on('moveend', () => { const c = map.getCenter(); state.lastCenter = [c.lat, c.lng]; save(); });
