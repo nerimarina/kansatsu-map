@@ -280,7 +280,7 @@ nav button.on{color:var(--blue)}
   </div>
   <div class="field">
     <label for="fLabel" id="fLabelLabel"></label>
-    <textarea id="fLabel" class="line" rows="1" autocomplete="off" enterkeyhint="done"></textarea>
+    <textarea id="fLabel" class="line" rows="1" autocomplete="off" ></textarea>
   </div>
   <div class="field" id="fStrengthWrap">
     <label id="fStrengthLabel">強さ</label>
@@ -289,6 +289,10 @@ nav button.on{color:var(--blue)}
       <button type="button" data-s="2" class="on">2 ふつう</button>
       <button type="button" data-s="3">3 強い</button>
     </div>
+  </div>
+  <div class="field" id="fNoteWrap">
+    <label for="fNote" id="fNoteLabel">メモ</label>
+    <textarea id="fNote" rows="2"></textarea>
   </div>
   <button type="button" class="more-toggle" id="moreToggle">もっと書く</button>
   <div id="more" hidden>
@@ -299,10 +303,6 @@ nav button.on{color:var(--blue)}
     <div class="field" id="fTagsWrap">
       <label>特徴</label>
       <div class="chips" id="fTags"></div>
-    </div>
-    <div class="field">
-      <label for="fNote" id="fNoteLabel">メモ</label>
-      <textarea id="fNote"></textarea>
     </div>
   </div>
   <div class="starrow" id="starRow">
@@ -438,12 +438,12 @@ function openSheet(e, fresh=false){
   $('fLabelLabel').textContent = memo ? 'メモ' : M.label;
   $('fLabel').placeholder = memo ? '見たこと、気づいたこと、なんでも' : M.labelPh;
   $('fLabel').value = e.label;
-  $('fLabel').enterKeyHint = memo ? 'enter' : 'done';
   requestAnimationFrame(growLabel);
   $('fStrengthWrap').hidden = memo;
+  $('fNoteWrap').hidden = memo;
   $('moreToggle').hidden = memo;
   $('starRow').hidden = memo;
-  $('more').hidden = !(!memo && !fresh && (e.ono || e.note || (e.tags||[]).length));
+  $('more').hidden = !(!memo && !fresh && (e.ono || (e.tags||[]).length));
   $('moreToggle').textContent = $('more').hidden ? 'もっと書く' : '閉じる';
   if(!memo){
     $('fStrengthLabel').textContent = M.strength;
@@ -469,8 +469,6 @@ $('fStrength').onclick = ev => { const b = ev.target.closest('button'); if(!b) r
 $('fStar').onclick = () => $('fStar').classList.toggle('on');
 $('shCancel').onclick = closeSheet;
 scrim.onclick = closeSheet;
-// メモは Enter で改行、それ以外は Enter で保存
-$('fLabel').addEventListener('keydown', ev => { if(ev.key === 'Enter' && !ev.isComposing && editing && editing.kind !== 'memo'){ ev.preventDefault(); $('shSave').click(); } });
 function growLabel(){ const t = $('fLabel'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
 $('fLabel').addEventListener('input', growLabel);
 $('shSave').onclick = () => {
