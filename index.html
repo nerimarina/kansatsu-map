@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#f6f1e6">
 <title>観察マップ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
@@ -17,7 +17,7 @@
   --ink:#5a3825; --ink-2:#8a6b58; --ink-3:#b5a291;
   --line:#dccfba; --rule:#c9b79d;
   --blue:#3a8fb7; --blue-soft:#e3eef2;
-  --head:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif;
+  --head:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
   --latin:"Cormorant Garamond","Times New Roman",serif;
   color-scheme:light;
 }
@@ -26,7 +26,7 @@ body{--ac:var(--blue);--ac-soft:var(--blue-soft)}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{
-  font-family:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif;
+  font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
   font-size:15px;line-height:1.6;color:var(--ink);background:var(--paper);
   overflow:hidden;-webkit-text-size-adjust:100%;
 }
@@ -37,6 +37,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:1.5px so
 input,textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:8px 2px;width:100%}
 input::placeholder,textarea::placeholder{color:var(--ink-3)}
 textarea{resize:vertical;min-height:64px;border:1px solid var(--line);padding:8px 10px;border-radius:2px}
+textarea.line{resize:none;min-height:0;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:8px 2px;overflow:hidden}
 [hidden]{display:none!important}
 
 #app{height:100%;display:flex;flex-direction:column}
@@ -101,6 +102,7 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .row .time{position:absolute;left:-72px;top:13px;width:44px;text-align:right;font-size:14px;color:var(--ink-2)}
 .row .dot{position:absolute;left:-24px;top:18px;width:11px;height:11px;border-radius:50%;border:2px solid var(--blue);background:var(--paper)}
 .row.memo .dot{border:1.5px solid var(--ink);border-radius:0;width:8px;height:8px;left:-22.5px;top:20px;transform:rotate(45deg)}
+.row .label,.row .meta,.leaflet-popup-content{white-space:pre-line}
 .row .label{font-family:var(--head);font-weight:700;font-size:16px}
 .row.memo .label{font-weight:500}
 .row .label .k{font-family:var(--latin);font-style:italic;font-weight:500;color:var(--ink-2);margin-right:8px}
@@ -278,7 +280,7 @@ nav button.on{color:var(--blue)}
   </div>
   <div class="field">
     <label for="fLabel" id="fLabelLabel"></label>
-    <input id="fLabel" autocomplete="off" enterkeyhint="done">
+    <textarea id="fLabel" class="line" rows="1" autocomplete="off" enterkeyhint="done"></textarea>
   </div>
   <div class="field" id="fStrengthWrap">
     <label id="fStrengthLabel">強さ</label>
@@ -436,6 +438,8 @@ function openSheet(e, fresh=false){
   $('fLabelLabel').textContent = memo ? 'メモ' : M.label;
   $('fLabel').placeholder = memo ? '見たこと、気づいたこと、なんでも' : M.labelPh;
   $('fLabel').value = e.label;
+  $('fLabel').enterKeyHint = memo ? 'enter' : 'done';
+  requestAnimationFrame(growLabel);
   $('fStrengthWrap').hidden = memo;
   $('moreToggle').hidden = memo;
   $('starRow').hidden = memo;
@@ -465,7 +469,10 @@ $('fStrength').onclick = ev => { const b = ev.target.closest('button'); if(!b) r
 $('fStar').onclick = () => $('fStar').classList.toggle('on');
 $('shCancel').onclick = closeSheet;
 scrim.onclick = closeSheet;
-$('fLabel').addEventListener('keydown', ev => { if(ev.key === 'Enter'){ ev.preventDefault(); $('shSave').click(); } });
+// メモは Enter で改行、それ以外は Enter で保存
+$('fLabel').addEventListener('keydown', ev => { if(ev.key === 'Enter' && !ev.isComposing && editing && editing.kind !== 'memo'){ ev.preventDefault(); $('shSave').click(); } });
+function growLabel(){ const t = $('fLabel'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+$('fLabel').addEventListener('input', growLabel);
 $('shSave').onclick = () => {
   if(!editing) return;
   editing.label = $('fLabel').value.trim();
